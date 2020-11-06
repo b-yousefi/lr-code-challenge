@@ -1,0 +1,25 @@
+add-items-dialog {
+  display: block;
+  padding: 10px;
+  border: 1px solid gray;
+  background-color: #fafafa;
+
+  .app-section--add-item {
+    padding: 10px;
+  }
+  .app--add-item-form {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  .app--add-attributes-list {
+    padding: 5px;
+  }
+
+  .app--add-attributes-list-item {
+    margin-bottom: 10px;
+  }
+
+  input:invalid {
+    border: 2px dashed red;
+  }
+}

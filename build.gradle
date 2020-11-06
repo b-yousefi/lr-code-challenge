@@ -1,0 +1,71 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.2.1.RELEASE")
+    }
+}
+
+plugins {
+	id"com.github.node-gradle.node" version "2.2.4"
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+
+// https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md#configuring-the-plugin
+node {
+    nodeModulesDir = file("${project.projectDir}/aurelia-app")
+    version = '10.15.1'
+    yarnVersion = '1.13.0'
+    download = true
+}
+
+
+yarn_install {
+	inputs.files('package.json', 'yarn.lock')
+	args = ['--check-files']
+}
+
+
+task buildFrontend(type: YarnTask, dependsOn: 'yarn_install') {
+	group = "labfolder"
+	description = "Build frontend"
+
+	inputs.files('aurelia-app/package.json', 'aurelia-app/webpack.config.js', 'aurelia-app/tsconfig.json', 'aurelia-app/tslint.json', 'aurelia-app/aurelia_project/aurelia.json')
+	inputs.files('aurelia-app/index.ejs', 'aurelia-app/favicon.ico')
+	inputs.dir('aurelia-app/src')
+	outputs.dir("${buildDir}/resources/main/static")
+
+	args = ['build']
+}
+
+
+bootJar {
+    baseName = 'lr-code-challenge'
+    version =  '0.1.0'
+}
+
+bootRun.dependsOn buildFrontend
+
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.apache.commons:commons-lang3:3.9")
+    compile("com.google.guava:guava:28.1-jre")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('com.jayway.jsonpath:json-path')
+}

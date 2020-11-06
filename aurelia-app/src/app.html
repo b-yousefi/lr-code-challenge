@@ -1,0 +1,17 @@
+<template>
+  <h1>${title}</h1>
+
+  <main>
+    <!-- Add item form -->
+    <section class="app-section--add-item">
+      <add-items-dialog save.bind="addItem"></add-items-dialog>
+    </section>
+
+    <!-- List of existing items -->
+    <section class="app-section--items-list">
+      <h2>Item list</h2>
+      <item-card item.bind="item"
+                 repeat.for="item of items"></item-card>
+    </section>
+  </main>
+</template>
