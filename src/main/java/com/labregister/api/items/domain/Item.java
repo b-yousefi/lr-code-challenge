@@ -1,11 +1,10 @@
 package com.labregister.api.items.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.labregister.api.core.validation.Entity;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Simple Item resource to demonstrate Labregister functionality
@@ -20,6 +19,13 @@ public class Item implements Entity, Comparable<Item> {
 	private Map<@NotBlank String, @NotBlank String> attributes = new HashMap<>();
 
 	private Date creationDate;
+
+	private Date lastUpdateDate;
+
+	private int versionNumber = 0;
+
+	@JsonIgnore
+	private final Deque<ItemVersion> versions = new LinkedList<>();
 
 	public Item() {
 		// needed for JSON deserialization
@@ -65,10 +71,42 @@ public class Item implements Entity, Comparable<Item> {
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
+		this.lastUpdateDate = creationDate;
+	}
+
+	public List<ItemVersion> getVersions() {
+		return new ArrayList<>(versions);
+	}
+
+	public Date getLastUpdateDate() {
+		return lastUpdateDate;
+	}
+
+	public void setLastUpdateDate(Date lastUpdateDate) {
+		this.lastUpdateDate = lastUpdateDate;
+	}
+
+	public void createVersion() {
+		versionNumber++;
+		versions.push(new ItemVersion(this));
+	}
+
+	public int getVersionNumber() {
+		return versionNumber;
 	}
 
 	@Override
 	public int compareTo(Item item) {
 		return item.getCreationDate().compareTo(this.getCreationDate());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Item item = (Item) o;
+		return id.equals(item.id) &&
+				name.equals(item.name) &&
+				attributes.equals(item.attributes);
 	}
 }
