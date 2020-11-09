@@ -1,8 +1,14 @@
 const itemsEndpoint = '/items';
 
 export interface Item {
+  id?: string;
   name: string;
   attributes: { [key: string]: string };
+}
+
+export interface ItemVersion extends Item {
+  versionDate: Date;
+  versionNumber: number;
 }
 
 /**
@@ -47,3 +53,49 @@ export async function postItem(item: Item): Promise<Item> {
 
   return response.json();
 }
+
+/**
+ * Update existing item. 
+ *
+ * @export
+ * @param {Item} item The item to update
+ * @return {Promise<Item>} The updated item
+ */
+export async function putItem(item: Item): Promise<Item> {
+  const itemUrl = `${itemsEndpoint}/${item.id}`
+  const response = await fetch(
+    itemUrl,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(item),
+    }
+  );
+
+  return response.json();
+}
+
+/**
+ * Get all versions of item.
+ *
+ * @export
+ * @param {string} itemId of item
+ * @return {Promise<ItemVersion[]>} The stored versions of item
+ */
+export async function getItemVersions(itemId: string): Promise<ItemVersion[]> {
+  const itemUrl = `${itemsEndpoint}/${itemId}/versions`
+  const response = await fetch(
+    itemUrl,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }
+  );
+
+  return response.json();
+}
+

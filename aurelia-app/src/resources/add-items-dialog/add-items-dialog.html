@@ -1,47 +1,34 @@
 <template>
   <div>
-    <h2>Add Item to the List</h2>
+    <h2> ${isEditMode? "Edit Item":"Add Item to the List"}</h2>
 
     <div class="app--add-item-form">
       <!-- item name input -->
       <section class="app-section--item-name">
         <label>
           Item Name:
-          <input required
-                 type="text"
-                 value.two-way="itemName"/>
+          <input required type="text" value.two-way="itemName" />
         </label>
       </section>
       <section class="app-section--item-attributes">
         <div class="app--add-attributes-list">
           <!-- list of attribute inputs -->
-          <div
-            class="app--add-attributes-list-item"
-            repeat.for="attr of attributes"
-          >
+          <div class="app--add-attributes-list-item" repeat.for="attr of attributes">
             <label>
               Key:
-              <input required
-                     type="text"
-                     value.two-way="attr[0]"/>
+              <input required type="text" value.two-way="attr[0]" />
             </label>
 
             <label>
               Value:
-              <input required
-                     type="text"
-                     value.two-way="attr[1]"/>
+              <input required type="text" value.two-way="attr[1]" />
             </label>
-            <button
-              click.delegate="removeAttribute($index)"
-            >
+            <button click.delegate="removeAttribute($index)">
               Remove Attribute
             </button>
           </div>
 
-          <button
-            click.delegate="addEmptyAttribute()"
-          >
+          <button click.delegate="addEmptyAttribute()">
             Add Attribute
           </button>
         </div>
@@ -50,10 +37,12 @@
 
     <!-- Save and Cancel buttons-->
     <div>
-      <button click.delegate="addItem()"
-              disabled.bind="!itemName || !validateAttributes"
-      >
-        Add
+      <button click.delegate="saveItem()" disabled.bind="!itemName || !validateAttributes">
+        ${isEditMode? "Save":"Add"}
+      </button>
+
+      <button if.bind="isEditMode" click.delegate="cancel()">
+        Cancel
       </button>
     </div>
   </div>

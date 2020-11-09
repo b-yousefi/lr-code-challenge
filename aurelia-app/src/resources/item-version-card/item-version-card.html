@@ -1,0 +1,14 @@
+<template>
+  <article>
+
+    <h3>Version number: ${version.versionNumber}</h3>
+    <h4>Date: ${version.versionDate.substring(0, 10)} Time: ${version.versionDate.substring(11, 19)}</h4>
+    <h4>Name: ${version.name}</h4>
+
+    <b>Attributes:</b>
+    <ul repeat.for="attr of attributes">
+      <li> ${attr[0]}: ${attr[1]} </li>
+    </ul>
+
+  </article>
+</template>
