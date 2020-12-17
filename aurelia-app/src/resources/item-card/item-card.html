@@ -1,6 +1,25 @@
 <template>
-  <article>
-    <h3>${item.name}</h3>
-    <span repeat.for="attr of attributes"><b>${attr[0]}:</b> ${attr[1]} </span>
-  </article>
+  <section if.bind="!isEditMode">
+    <article>
+      <h3>${item.name}</h3>
+      <span repeat.for="attr of attributes"><b>${attr[0]}:</b> ${attr[1]} </span>
+    </article>
+    <button click.delegate="onStartEdit()">
+      Update Item
+    </button>
+    <button click.delegate="onToggleVersions()">
+      ${showVersions? "Hide Version" : "Show Versions"}
+    </button>
+    </article>
+  </section>
+  <!-- Update item -->
+  <section else>
+    <add-items-dialog update.bind="update" item.bind="item" save.bind="update" oncancel.bind="onCancelEdit">
+    </add-items-dialog>
+  </section>
+  <!-- Versions of item -->
+  <section if.bind="showVersions">
+    <item-version-card version.bind="version" repeat.for="version of itemVersions">
+    </item-version-card>
+  </section>
 </template>

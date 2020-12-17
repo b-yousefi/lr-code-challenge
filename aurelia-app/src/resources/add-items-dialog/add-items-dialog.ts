@@ -14,6 +14,41 @@ export class AddItemsDialog {
   @bindable save: (item: Api.Item) => Promise<void>;
 
   /**
+   * Bound function reference to call to update item.
+   *
+   * @memberof AddItemsDialog
+   * @bindable
+   */
+  @bindable update: (item: Api.Item) => Promise<void>;
+
+  /**
+   * Bound function reference to call to cancel edition
+   *
+   * @memberof AddItemsDialog
+   * @bindable
+   */
+  @bindable oncancel: () => void;
+
+  /**
+   * The current item
+   *
+   * @type {Item}
+   * @memberof AddItemsDialog
+   * @bindable
+   */
+  @bindable item: Api.Item;
+
+
+  /**
+   * To show whether form is in edit mode or add mode
+   *
+   * @type {boolean}
+   * @memberof AddItemsDialog
+   * @bindable
+   */
+  @bindable isEditMode: boolean;
+
+  /**
    * Input element value of the item name
    *
    * @type {string}
@@ -31,6 +66,20 @@ export class AddItemsDialog {
   public attributes: Array<Array<string>> = new Array();
 
   /**
+   * @memberof AddItemsDialog
+   * @lifecycle
+   */
+  bind() {
+    if (this.item) {
+      this.itemName = this.item.name;
+      this.attributes = Object.entries(this.item.attributes);
+      this.isEditMode = true;
+    } else {
+      this.isEditMode = false;
+    }
+  }
+
+  /**
    * Add empty attribute to attributes array
    *
    * @memberof AddItemsDialog
@@ -45,6 +94,18 @@ export class AddItemsDialog {
   */
   removeAttribute(index) {
     this.attributes.splice(index, 1);
+  }
+
+  /**
+  * Updates item if it already exist, otherwise adds item
+  *
+  */
+  saveItem() {
+    if (this.isEditMode) {
+      this.updateItem();
+    } else {
+      this.addItem();
+    }
   }
 
   /**
@@ -69,6 +130,30 @@ export class AddItemsDialog {
   resetDialog() {
     this.itemName = '';
     this.attributes = new Array();
+  }
+
+  /**
+   * update current item
+   *
+   * @return {*}  {Promise<void>}
+   * @memberof AddItemsDialog
+   */
+  async updateItem(): Promise<void> {
+    void await this.update({
+      id: this.item.id,
+      name: this.itemName,
+      attributes: Object.fromEntries(this.attributes)
+    });
+    this.resetDialog();
+  }
+
+  /**
+   * cancel edition
+   *
+   * @memberof AddItemsDialog
+   */
+  cancel() {
+    this.oncancel();
   }
 
   /**

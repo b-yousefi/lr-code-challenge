@@ -10,8 +10,8 @@
     <!-- List of existing items -->
     <section class="app-section--items-list">
       <h2>Item list</h2>
-      <item-card item.bind="item"
-                 repeat.for="item of items"></item-card>
+      <item-card item.bind="item" repeat.for="item of items" versions.bind="getItemVersions" update.bind="updateItem">
+      </item-card>
     </section>
   </main>
 </template>

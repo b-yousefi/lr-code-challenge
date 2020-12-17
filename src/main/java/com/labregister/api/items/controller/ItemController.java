@@ -3,10 +3,14 @@ package com.labregister.api.items.controller;
 import com.google.common.base.Preconditions;
 import com.labregister.api.core.creation.EntityCreatedResponse;
 import com.labregister.api.items.domain.Item;
+import com.labregister.api.items.domain.ItemVersion;
 import com.labregister.api.items.service.ItemService;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriTemplate;
@@ -28,16 +32,28 @@ public class ItemController {
 		this.itemService = itemService;
 	}
 
-	@RequestMapping(value = "/items", method = RequestMethod.GET)
+	@GetMapping(value = "/items")
 	@ResponseBody
 	public Collection<Item> getItems() {
 		return itemService.getItems();
 	}
 
-	@RequestMapping(value = "/items", method = RequestMethod.POST)
+	@PostMapping(value = "/items")
 	public EntityCreatedResponse<Item> createItem(@RequestBody Item request) {
 		Item created = itemService.createItem(request);
 		return new EntityCreatedResponse<>(created, getItemLocation(created));
+	}
+
+	@PutMapping(value = "/items/{itemId}")
+	@ResponseBody
+	public Item updateItem(@PathVariable String itemId, @RequestBody Item request) {
+		return itemService.updateItem(itemId, request);
+	}
+
+	@GetMapping(value = "/items/{itemId}/versions")
+	@ResponseBody
+	public Collection<ItemVersion> getItemVersions(@PathVariable String itemId) {
+		return itemService.getItemVersions(itemId);
 	}
 
 	private URI getItemLocation(Item item) {

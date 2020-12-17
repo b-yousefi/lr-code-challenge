@@ -5,5 +5,6 @@ export function configure(config: FrameworkConfiguration) {
   config.globalResources([
     PLATFORM.moduleName('./add-items-dialog/add-items-dialog'),
     PLATFORM.moduleName('./item-card/item-card'),
+    PLATFORM.moduleName('./item-version-card/item-version-card'),
   ]);
 }
