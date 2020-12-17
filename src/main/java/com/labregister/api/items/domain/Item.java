@@ -87,7 +87,9 @@ public class Item implements Entity, Comparable<Item> {
 	}
 
 	public void createVersion() {
-		versionNumber++;
+		synchronized (this) {
+			versionNumber++;
+		}
 		versions.push(new ItemVersion(this));
 	}
 
