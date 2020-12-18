@@ -1,25 +1,28 @@
 import { bindable } from 'aurelia-framework';
 
-import * as Api from '../api/items';
+import { Item } from '../../models/Item';
+import * as Api from '../../store/item/actions';
 
 import './add-items-dialog.scss';
 
 export class AddItemsDialog {
   /**
-   * Bound function reference to call to persist the new item.
+   * Function to persist the new item.
    *
    * @memberof AddItemsDialog
-   * @bindable
    */
-  @bindable save: (item: Api.Item) => Promise<void>;
+  save(item: Item) {
+    Api.addItem(item);
+  }
 
   /**
-   * Bound function reference to call to update item.
+   * Function to update item.
    *
    * @memberof AddItemsDialog
-   * @bindable
    */
-  @bindable update: (item: Api.Item) => Promise<void>;
+  update(item: Item) {
+    Api.updateItem(item);
+  }
 
   /**
    * Bound function reference to call to cancel edition
@@ -36,7 +39,7 @@ export class AddItemsDialog {
    * @memberof AddItemsDialog
    * @bindable
    */
-  @bindable item: Api.Item;
+  @bindable item: Item;
 
 
   /**
@@ -111,11 +114,10 @@ export class AddItemsDialog {
   /**
    * Persist current item
    *
-   * @return {*}  {Promise<void>}
    * @memberof AddItemsDialog
    */
-  async addItem(): Promise<void> {
-    void await this.save({
+  addItem() {
+    this.save({
       name: this.itemName,
       attributes: Object.fromEntries(this.attributes)
     });
@@ -135,11 +137,10 @@ export class AddItemsDialog {
   /**
    * update current item
    *
-   * @return {*}  {Promise<void>}
    * @memberof AddItemsDialog
    */
-  async updateItem(): Promise<void> {
-    void await this.update({
+  updateItem() {
+    this.update({
       id: this.item.id,
       name: this.itemName,
       attributes: Object.fromEntries(this.attributes)
