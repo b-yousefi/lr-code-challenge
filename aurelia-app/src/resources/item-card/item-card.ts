@@ -1,6 +1,8 @@
 import { bindable } from 'aurelia-framework';
+import { dispatchify } from 'aurelia-store';
+
 import { Item } from '../../models/Item';
-import * as Api from '../../store/item/actions';
+import * as Mutations from '../../store/item/mutations';
 
 import './item-card.scss';
 
@@ -12,6 +14,12 @@ import './item-card.scss';
  * @customElement
  */
 export class ItemCard {
+  getItemVersions: (itemId: string) => Promise<void>;
+
+  constructor() {
+    this.getItemVersions = dispatchify(Mutations.getItemVersions);
+  }
+
   /**
    * The item
    *
@@ -45,7 +53,7 @@ export class ItemCard {
    * @memberof ItemCard
    */
   versions() {
-    Api.getItemVersions(this.item.id);
+    this.getItemVersions(this.item.id);
   }
 
   /**

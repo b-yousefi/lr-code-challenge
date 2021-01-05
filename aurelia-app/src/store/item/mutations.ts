@@ -1,7 +1,12 @@
+import produce from 'immer';
+import { setAutoFreeze } from 'immer';
+
 import { ItemVersion } from "models/ItemVersion";
 import { Item } from "models/Item";
 import ItemState from "store/item/state";
-import store from "store/store";
+import * as Api from './api';
+
+setAutoFreeze(false);
 
 const itemsEndpoint = "/items";
 
@@ -12,18 +17,11 @@ const itemsEndpoint = "/items";
  * @return {Promise<ItemState>} The state with fetched items
  */
 const getAllItems = async (state: ItemState): Promise<ItemState> => {
-  const response = await fetch(itemsEndpoint, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const items: Item[] = await response.json();
+  const items: Item[] = await Api.getAllItems();
 
-  const newState: ItemState = {
-    ...state,
-    items: items,
-  };
+  const newState: ItemState = produce(state, (draftState) => {
+    draftState.items = items
+  });
 
   return newState;
 };
@@ -36,20 +34,11 @@ const getAllItems = async (state: ItemState): Promise<ItemState> => {
  * @return {Promise<ItemState>} The state with new item added
  */
 const postItem = async (state: ItemState, item: Item): Promise<ItemState> => {
-  const response = await fetch(itemsEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
+  const addedItem: Item = await Api.postItem(item);
+
+  const newState: ItemState = produce(state, (draftState) => {
+    draftState.items.unshift(addedItem);
   });
-
-  const addedItem: Item = await response.json();
-
-  const newState: ItemState = {
-    ...state,
-    items: [addedItem].concat(state.items),
-  };
 
   return newState;
 };
@@ -62,29 +51,16 @@ const postItem = async (state: ItemState, item: Item): Promise<ItemState> => {
  * @return {Promise<ItemState>}  The state with updated item
  */
 const putItem = async (state: ItemState, item: Item): Promise<ItemState> => {
-  const itemUrl = `${itemsEndpoint}/${item.id}`;
-  console.log(item);
-  console.log(JSON.stringify(item));
-  const response = await fetch(itemUrl, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
-  });
+  const updatedItem: Item = await Api.putItem(item);
 
-  const updatedItem: Item = await response.json();
-
-  const updatedItems = [...state.items];
-  const updatedItemIndx = updatedItems.findIndex(
+  const updatedItemIndx = state.items.findIndex(
     (it) => it.id === updatedItem.id
   );
-  updatedItems[updatedItemIndx] = updatedItem;
 
-  const newState: ItemState = {
-    ...state,
-    items: updatedItems,
-  };
+  const newState: ItemState = produce(state, (draftState) => {
+    draftState.items[updatedItemIndx] = updatedItem;
+  });
+
   return newState;
 };
 
@@ -99,32 +75,15 @@ const getItemVersions = async (
   state: ItemState,
   itemId: string
 ): Promise<ItemState> => {
-  const itemUrl = `${itemsEndpoint}/${itemId}/versions`;
-  const response = await fetch(itemUrl, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+  const itemVerions: ItemVersion[] = await Api.getItemVersions(itemId);
+
+  const itemIndx = state.items.findIndex((it) => it.id === itemId);
+
+  const newState: ItemState = produce(state, (draftState) => {
+    draftState.items[itemIndx] = { ...draftState.items[itemIndx], versions: itemVerions };
   });
-
-  const itemVerions: ItemVersion[] = await response.json();
-
-  const updatedItems = [...state.items];
-  const itemIndx = updatedItems.findIndex((it) => it.id === itemId);
-
-  updatedItems[itemIndx] = { ...updatedItems[itemIndx], versions: itemVerions };
-
-  const newState: ItemState = {
-    ...state,
-    items: updatedItems,
-  };
 
   return newState;
 };
-
-store.registerAction("getAllItems", getAllItems);
-store.registerAction("postItem", postItem);
-store.registerAction("putItem", putItem);
-store.registerAction("getItemVersions", getItemVersions);
 
 export { getAllItems, postItem, putItem, getItemVersions };

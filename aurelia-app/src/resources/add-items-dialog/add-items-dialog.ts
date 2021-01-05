@@ -1,27 +1,18 @@
 import { bindable } from 'aurelia-framework';
+import { dispatchify } from 'aurelia-store';
 
 import { Item } from '../../models/Item';
-import * as Api from '../../store/item/actions';
+import * as Mutations from '../../store/item/mutations';
 
 import './add-items-dialog.scss';
 
 export class AddItemsDialog {
-  /**
-   * Function to persist the new item.
-   *
-   * @memberof AddItemsDialog
-   */
-  save(item: Item) {
-    Api.addItem(item);
-  }
+  postItem: (item: Item) => Promise<void>;
+  putItem: (item: Item) => Promise<void>;
 
-  /**
-   * Function to update item.
-   *
-   * @memberof AddItemsDialog
-   */
-  update(item: Item) {
-    Api.updateItem(item);
+  constructor() {
+    this.postItem = dispatchify(Mutations.postItem);
+    this.putItem = dispatchify(Mutations.putItem);
   }
 
   /**
@@ -117,7 +108,7 @@ export class AddItemsDialog {
    * @memberof AddItemsDialog
    */
   addItem() {
-    this.save({
+    this.postItem({
       name: this.itemName,
       attributes: Object.fromEntries(this.attributes)
     });
@@ -140,7 +131,7 @@ export class AddItemsDialog {
    * @memberof AddItemsDialog
    */
   updateItem() {
-    this.update({
+    this.putItem({
       id: this.item.id,
       name: this.itemName,
       attributes: Object.fromEntries(this.attributes)
