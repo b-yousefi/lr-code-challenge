@@ -1,25 +1,19 @@
 import { bindable } from 'aurelia-framework';
+import { dispatchify } from 'aurelia-store';
 
-import * as Api from '../api/items';
+import { Item } from '../../models/Item';
+import * as Mutations from '../../store/item/mutations';
 
 import './add-items-dialog.scss';
 
 export class AddItemsDialog {
-  /**
-   * Bound function reference to call to persist the new item.
-   *
-   * @memberof AddItemsDialog
-   * @bindable
-   */
-  @bindable save: (item: Api.Item) => Promise<void>;
+  postItem: (item: Item) => Promise<void>;
+  putItem: (item: Item) => Promise<void>;
 
-  /**
-   * Bound function reference to call to update item.
-   *
-   * @memberof AddItemsDialog
-   * @bindable
-   */
-  @bindable update: (item: Api.Item) => Promise<void>;
+  constructor() {
+    this.postItem = dispatchify(Mutations.postItem);
+    this.putItem = dispatchify(Mutations.putItem);
+  }
 
   /**
    * Bound function reference to call to cancel edition
@@ -36,7 +30,7 @@ export class AddItemsDialog {
    * @memberof AddItemsDialog
    * @bindable
    */
-  @bindable item: Api.Item;
+  @bindable item: Item;
 
 
   /**
@@ -111,11 +105,10 @@ export class AddItemsDialog {
   /**
    * Persist current item
    *
-   * @return {*}  {Promise<void>}
    * @memberof AddItemsDialog
    */
-  async addItem(): Promise<void> {
-    void await this.save({
+  addItem() {
+    this.postItem({
       name: this.itemName,
       attributes: Object.fromEntries(this.attributes)
     });
@@ -135,11 +128,10 @@ export class AddItemsDialog {
   /**
    * update current item
    *
-   * @return {*}  {Promise<void>}
    * @memberof AddItemsDialog
    */
-  async updateItem(): Promise<void> {
-    void await this.update({
+  updateItem() {
+    this.putItem({
       id: this.item.id,
       name: this.itemName,
       attributes: Object.fromEntries(this.attributes)

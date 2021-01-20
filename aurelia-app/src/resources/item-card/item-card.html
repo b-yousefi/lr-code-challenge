@@ -14,12 +14,12 @@
   </section>
   <!-- Update item -->
   <section else>
-    <add-items-dialog update.bind="update" item.bind="item" save.bind="update" oncancel.bind="onCancelEdit">
+    <add-items-dialog item.bind="item" oncancel.bind="onCancelEdit">
     </add-items-dialog>
   </section>
   <!-- Versions of item -->
   <section if.bind="showVersions">
-    <item-version-card version.bind="version" repeat.for="version of itemVersions">
+    <item-version-card version.bind="version" repeat.for="version of item.versions">
     </item-version-card>
   </section>
 </template>

@@ -9,7 +9,10 @@
   "license": "MIT",
   "dependencies": {
     "aurelia-animator-css": "^1.0.4",
-    "aurelia-bootstrapper": "^2.3.3"
+    "aurelia-bootstrapper": "^2.3.3",
+    "aurelia-store": "^1.6.0",
+    "immer": "^8.0.0",
+    "rxjs": "^6.6.3"
   },
   "devDependencies": {
     "@types/jasmine": "^3.5.7",

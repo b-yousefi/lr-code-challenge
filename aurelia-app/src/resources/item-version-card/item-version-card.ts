@@ -1,5 +1,5 @@
 import { bindable } from 'aurelia-framework';
-import * as Api from '../api/items';
+import { ItemVersion } from '../../models/ItemVersion';
 
 import './item-version-card.scss';
 
@@ -20,7 +20,7 @@ export class ItemVersionCard {
    * @memberof ItemVersionCard
    * @bindable
    */
-  @bindable version: Api.ItemVersion;
+  @bindable version: ItemVersion;
 
 
   /**

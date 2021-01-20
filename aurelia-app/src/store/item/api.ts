@@ -1,15 +1,7 @@
-const itemsEndpoint = '/items';
+import { Item } from 'models/Item';
+import { ItemVersion } from 'models/ItemVersion';
 
-export interface Item {
-  id?: string;
-  name: string;
-  attributes: { [key: string]: string };
-}
-
-export interface ItemVersion extends Item {
-  versionDate: Date;
-  versionNumber: number;
-}
+const itemsEndpoint = "/items";
 
 /**
  * Get all items. 
@@ -98,4 +90,3 @@ export async function getItemVersions(itemId: string): Promise<ItemVersion[]> {
 
   return response.json();
 }
-

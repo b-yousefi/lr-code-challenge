@@ -1,5 +1,8 @@
 import { bindable } from 'aurelia-framework';
-import { Item, ItemVersion } from '../api/items';
+import { dispatchify } from 'aurelia-store';
+
+import { Item } from '../../models/Item';
+import * as Mutations from '../../store/item/mutations';
 
 import './item-card.scss';
 
@@ -11,6 +14,12 @@ import './item-card.scss';
  * @customElement
  */
 export class ItemCard {
+  getItemVersions: (itemId: string) => Promise<void>;
+
+  constructor() {
+    this.getItemVersions = dispatchify(Mutations.getItemVersions);
+  }
+
   /**
    * The item
    *
@@ -19,15 +28,6 @@ export class ItemCard {
    * @bindable
    */
   @bindable item: Item;
-
-  /**
-   * The item versions
-   *
-   * @type {ItemVersion[]}
-   * @memberof ItemCard
-   * @bindable
-   */
-  @bindable itemVersions: ItemVersion[] = [];
 
   /**
    * Edit mode 
@@ -48,20 +48,13 @@ export class ItemCard {
   @bindable showVersions: boolean;
 
   /**
-   * Bound function reference to call to update item.
+   * Function to get all versions of item.
    *
    * @memberof ItemCard
-   * @bindable
    */
-  @bindable update: (item: Item) => Promise<void>;
-
-  /**
-   * Bound function reference to call to get all versions of item.
-   *
-   * @memberof ItemCard
-   * @bindable
-   */
-  @bindable versions: (itemId: string) => Promise<ItemVersion[]>;
+  versions() {
+    this.getItemVersions(this.item.id);
+  }
 
   /**
    * Array of this item's attributes
@@ -77,6 +70,7 @@ export class ItemCard {
    */
   bind() {
     this.convertItemsObjectToArray();
+    this.showVersions = this.item.versions !== undefined;
   }
 
   /**
@@ -91,7 +85,7 @@ export class ItemCard {
   /**
    * Swith to Edit mode
    *
-   * @memberof ItemCardEditable
+   * @memberof ItemCard
    */
   onStartEdit(): void {
     this.isEditMode = true;
@@ -100,7 +94,7 @@ export class ItemCard {
   /**
    * Swith to View mode
    *
-   * @memberof ItemCardEditable
+   * @memberof ItemCard
    */
   onCancelEdit = () => {
     this.isEditMode = false;
@@ -109,13 +103,13 @@ export class ItemCard {
   /**
    * Toggle item versions
    *
-   * @memberof ItemCardEditable
+   * @memberof ItemCard
    */
-  onToggleVersions = async (): Promise<void> => {
+  onToggleVersions = () => {
     if (this.showVersions) {
       this.showVersions = false;
     } else {
-      this.itemVersions = await this.versions(this.item.id);
+      this.versions();
       this.showVersions = true;
     }
   }
